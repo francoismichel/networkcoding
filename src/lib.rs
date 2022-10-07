@@ -1,7 +1,16 @@
 use byteorder::{BigEndian, ByteOrder};
+
+#[cfg(feature = "enable-rlc")]
 use crate::rlc::decoder::RLCDecoder;
+#[cfg(feature = "enable-rlc")]
 use crate::rlc::encoder::RLCEncoder;
 
+use crate::vandermonde_lc::decoder::VLCDecoder;
+use crate::vandermonde_lc::encoder::VLCEncoder;
+
+pub mod vandermonde_lc;
+
+#[cfg(feature = "enable-rlc")]
 pub mod rlc;
 
 pub type SourceSymbolMetadata = [u8; 8];
@@ -103,11 +112,15 @@ impl SourceSymbol {
 }
 
 pub enum Encoder {
-    RLC(RLCEncoder)
+    #[cfg(feature = "enable-rlc")]
+    RLC(RLCEncoder),
+    VLC(VLCEncoder),
 }
 
 pub enum Decoder {
-    RLC(RLCDecoder)
+    #[cfg(feature = "enable-rlc")]
+    RLC(RLCDecoder),
+    VLC(VLCDecoder),
 }
 
 impl Encoder {
@@ -117,7 +130,11 @@ impl Encoder {
     /// Returns the amount of written bytes on success
     pub fn protect_data(&mut self, data: Vec<u8>, output: &mut SourceSymbolMetadata) -> Result<usize, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.protect_data(data, output)
+            }
+            Encoder::VLC(enc) => {
                 enc.protect_data(data, output)
             }
         }
@@ -127,7 +144,11 @@ impl Encoder {
     /// Generates a new repair symbol protecting
     pub fn generate_and_serialize_repair_symbol_in_place_up_to(&mut self, to: &mut [u8], up_to: SourceSymbolMetadata) -> Result<usize, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.generate_and_serialize_repair_symbol_in_place_up_to(to, up_to)
+            }
+            Encoder::VLC(enc) => {
                 enc.generate_and_serialize_repair_symbol_in_place_up_to(to, up_to)
             }
         }
@@ -137,7 +158,11 @@ impl Encoder {
     /// Generates a new repair symbol protecting
     pub fn generate_and_serialize_repair_symbol_in_place(&mut self, to: &mut [u8]) -> Result<usize, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.generate_and_serialize_repair_symbol_in_place(to)
+            }
+            Encoder::VLC(enc) => {
                 enc.generate_and_serialize_repair_symbol_in_place(to)
             }
         }
@@ -147,7 +172,11 @@ impl Encoder {
     /// Indicates the symbol with the given metadata as received
     pub fn received_symbol(&mut self, metadata: &[u8]) -> Result<usize, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.received_symbol(metadata)
+            }
+            Encoder::VLC(enc) => {
                 enc.received_symbol(metadata)
             }
         }
@@ -155,7 +184,11 @@ impl Encoder {
 
     pub fn symbol_size(&self) -> usize {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.symbol_size()
+            }
+            Encoder::VLC(enc) => {
                 enc.symbol_size()
             }
         }
@@ -163,7 +196,13 @@ impl Encoder {
 
     pub fn generate_and_serialize_repair_symbol_up_to(&mut self, up_to: SourceSymbolMetadata) -> Result<RepairSymbol, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                Ok(RepairSymbol{
+                    data: enc.generate_and_serialize_repair_symbol_up_to(up_to)?,
+                   })
+            }
+            Encoder::VLC(enc) => {
                 Ok(RepairSymbol{
                     data: enc.generate_and_serialize_repair_symbol_up_to(up_to)?,
                    })
@@ -173,7 +212,13 @@ impl Encoder {
 
     pub fn generate_and_serialize_repair_symbol(&mut self) -> Result<RepairSymbol, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                Ok(RepairSymbol{
+                    data: enc.generate_and_serialize_repair_symbol()?,
+                   })
+            }
+            Encoder::VLC(enc) => {
                 Ok(RepairSymbol{
                     data: enc.generate_and_serialize_repair_symbol()?,
                    })
@@ -183,7 +228,11 @@ impl Encoder {
 
     pub fn can_send_repair_symbols(&self) -> bool {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.can_send_repair_symbols()
+            }
+            Encoder::VLC(enc) => {
                 enc.can_send_repair_symbols()
             }
         }
@@ -191,7 +240,11 @@ impl Encoder {
 
     pub fn remove_up_to(&mut self, md: SourceSymbolMetadata) {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                enc.remove_up_to(md);
+            }
+            Encoder::VLC(enc) => {
                 enc.remove_up_to(md);
             }
         }
@@ -199,7 +252,11 @@ impl Encoder {
 
     pub fn next_metadata(&mut self) -> Result<SourceSymbolMetadata, EncoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Encoder::RLC(enc) => {
+                Ok(enc.next_metadata())
+            }
+            Encoder::VLC(enc) => {
                 Ok(enc.next_metadata())
             }
             // _ => Err(EncoderError::NoNextMetadata)
@@ -214,7 +271,11 @@ impl Decoder {
     /// Returns the amount of written bytes on success
     pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol) -> Result<Vec<SourceSymbol>, DecoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
+                dec.receive_source_symbol(source_symbol)
+            }
+            Decoder::VLC(dec) => {
                 dec.receive_source_symbol(source_symbol)
             }
         }
@@ -224,7 +285,11 @@ impl Decoder {
     /// Generates a new repair symbol protecting
     pub fn receive_and_deserialize_repair_symbol(&mut self, repair_symbol: RepairSymbol) -> Result<(usize, Vec<SourceSymbol>), DecoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
+                dec.receive_and_deserialize_repair_symbol(repair_symbol)
+            }
+            Decoder::VLC(dec) => {
                 dec.receive_and_deserialize_repair_symbol(repair_symbol)
             }
         }
@@ -233,7 +298,11 @@ impl Decoder {
 
     pub fn read_repair_symbol(&self, data: &[u8]) -> Result<(usize, RepairSymbol), DecoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
+                dec.read_repair_symbol(data)
+            }
+            Decoder::VLC(dec) => {
                 dec.read_repair_symbol(data)
             }
         }
@@ -241,7 +310,11 @@ impl Decoder {
 
     pub fn read_source_symbol_metadata(&self, data: &[u8]) -> Result<(usize, SourceSymbolMetadata), DecoderError> {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
+                dec.read_source_symbol_metadata(data)
+            }
+            Decoder::VLC(dec) => {
                 dec.read_source_symbol_metadata(data)
             }
         }
@@ -249,7 +322,11 @@ impl Decoder {
 
     pub fn symbol_size(&self) -> usize {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
+                dec.symbol_size()
+            }
+            Decoder::VLC(dec) => {
                 dec.symbol_size()
             }
         }
@@ -257,7 +334,11 @@ impl Decoder {
 
     pub fn remove_up_to(&mut self, md: SourceSymbolMetadata) {
         match self {
+            #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
+                dec.remove_up_to(md);
+            }
+            Decoder::VLC(dec) => {
                 dec.remove_up_to(md);
             }
         }

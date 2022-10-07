@@ -6,9 +6,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rustrlc = { path = "../rustrlc"}
-rustgf = { path = "../rustgf"}
+vandermonde_lc = { git = "ssh://git@github.com/francoismichel/vandermonde-linear-coding.git" }
+rustrlc = { git = "ssh://git@github.com/francoismichel/rustrlc.git", optional = true }
+rustgf = { git = "ssh://git@github.com/francoismichel/rustgf.git" }
 byteorder = "1.4.3"
 tinymt = "1.0"
 rand = "0.8.4"
 
+[features]
+enable-rlc = ["dep:rustrlc"]
