@@ -1,0 +1,2 @@
+[defines]
+"feature = enable-rlc" = "ENABLE_RLC"

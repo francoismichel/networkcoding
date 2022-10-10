@@ -9,9 +9,13 @@ edition = "2018"
 vandermonde_lc = { git = "ssh://git@github.com/francoismichel/vandermonde-linear-coding.git" }
 rustrlc = { git = "ssh://git@github.com/francoismichel/rustrlc.git", optional = true }
 rustgf = { git = "ssh://git@github.com/francoismichel/rustgf.git" }
+libc = "0.2.0"
 byteorder = "1.4.3"
 tinymt = "1.0"
 rand = "0.8.4"
 
 [features]
 enable-rlc = ["dep:rustrlc"]
+
+[lib]
+crate-type = ["lib", "staticlib", "cdylib"]

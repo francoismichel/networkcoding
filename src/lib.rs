@@ -13,8 +13,11 @@ pub mod vandermonde_lc;
 #[cfg(feature = "enable-rlc")]
 pub mod rlc;
 
+pub mod ffi;
+
 pub type SourceSymbolMetadata = [u8; 8];
 
+#[repr(C)]
 #[derive(Debug)]
 pub enum EncoderError {
     InternalError(String),
@@ -39,6 +42,17 @@ impl EncoderError {
             EncoderError::NoNextMetadata => 4,
         }
     }
+
+    fn to_c(self) -> libc::ssize_t {
+        match self {
+            EncoderError::InternalError(_) => -1,
+            EncoderError::BufferTooSmall => -2,
+            EncoderError::NoSymbolToGenerate => -3,
+            EncoderError::BadMetadata => -4,
+            EncoderError::UnImplementedEncoder => -5,
+            EncoderError::NoNextMetadata => -6,
+        }
+    }
 }
 
 impl DecoderError {
@@ -52,6 +66,16 @@ impl DecoderError {
             DecoderError::BadMetadata => 2,
             DecoderError::UnImplementedDecoder => 3,
             DecoderError::UnusedRepairSymbol => 4
+        }
+    }
+
+    fn to_c(self) -> libc::ssize_t {
+        match self {
+            DecoderError::InternalError(_) => -1,
+            DecoderError::BufferTooSmall => -2,
+            DecoderError::BadMetadata => -3,
+            DecoderError::UnImplementedDecoder => -4,
+            DecoderError::UnusedRepairSymbol => -5,
         }
     }
 }
@@ -111,12 +135,14 @@ impl SourceSymbol {
     }
 }
 
+#[repr(C)]
 pub enum Encoder {
     #[cfg(feature = "enable-rlc")]
     RLC(RLCEncoder),
     VLC(VLCEncoder),
 }
 
+#[repr(C)]
 pub enum Decoder {
     #[cfg(feature = "enable-rlc")]
     RLC(RLCDecoder),
