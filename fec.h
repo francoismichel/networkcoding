@@ -41,8 +41,8 @@ ssize_t encoder_protect_data(encoder_t *encoder,
  * Generates a new repair symbol protecting
  */
 ssize_t encoder_generate_and_serialize_repair_symbol_up_to(encoder_t *encoder,
-                                                           uint8_t *to,
-                                                           size_t to_len,
+                                                           uint8_t *out,
+                                                           size_t out_len,
                                                            source_symbol_metadata_t up_to);
 
 /**
@@ -50,8 +50,8 @@ ssize_t encoder_generate_and_serialize_repair_symbol_up_to(encoder_t *encoder,
  * Generates a new repair symbol protecting
  */
 ssize_t encoder_generate_and_serialize_repair_symbol(encoder_t *encoder,
-                                                     uint8_t *to,
-                                                     size_t to_len);
+                                                     uint8_t *out,
+                                                     size_t out_len);
 
 /**
  *

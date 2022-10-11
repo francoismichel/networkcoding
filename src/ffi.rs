@@ -77,8 +77,8 @@ pub extern "C" fn encoder_protect_data(encoder: &mut encoder_t, data: *mut u8, d
 ///
 /// Generates a new repair symbol protecting
 #[no_mangle]
-pub extern "C" fn encoder_generate_and_serialize_repair_symbol_up_to(encoder: &mut encoder_t, to: *mut u8, to_len: size_t, up_to: source_symbol_metadata_t) -> ssize_t {
-    let buf = unsafe { slice::from_raw_parts_mut(to, to_len) };
+pub extern "C" fn encoder_generate_and_serialize_repair_symbol_up_to(encoder: &mut encoder_t, out: *mut u8, out_len: size_t, up_to: source_symbol_metadata_t) -> ssize_t {
+    let buf = unsafe { slice::from_raw_parts_mut(out, out_len) };
     match encoder.generate_and_serialize_repair_symbol_in_place_up_to(buf, source_symbol_metadata_from_u64(up_to))  {
         Ok(v) => v as ssize_t,
         Err(e) => e.to_c(),
@@ -88,8 +88,8 @@ pub extern "C" fn encoder_generate_and_serialize_repair_symbol_up_to(encoder: &m
 ///
 /// Generates a new repair symbol protecting
 #[no_mangle]
-pub extern "C" fn encoder_generate_and_serialize_repair_symbol(encoder: &mut encoder_t, to: *mut u8, to_len: size_t) -> ssize_t {
-    let buf = unsafe { slice::from_raw_parts_mut(to, to_len) };
+pub extern "C" fn encoder_generate_and_serialize_repair_symbol(encoder: &mut encoder_t, out: *mut u8, out_len: size_t) -> ssize_t {
+    let buf = unsafe { slice::from_raw_parts_mut(out, out_len) };
     match encoder.generate_and_serialize_repair_symbol_in_place(buf)  {
         Ok(v) => v as ssize_t,
         Err(e) => e.to_c(),
