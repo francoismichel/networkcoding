@@ -135,14 +135,12 @@ impl SourceSymbol {
     }
 }
 
-#[repr(C)]
 pub enum Encoder {
     #[cfg(feature = "enable-rlc")]
     RLC(RLCEncoder),
     VLC(VLCEncoder),
 }
 
-#[repr(C)]
 pub enum Decoder {
     #[cfg(feature = "enable-rlc")]
     RLC(RLCDecoder),
