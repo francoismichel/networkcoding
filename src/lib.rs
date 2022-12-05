@@ -89,13 +89,13 @@ pub enum DecoderError {
     UnusedRepairSymbol,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct SourceSymbol {
     metadata: SourceSymbolMetadata,
     data: Vec<u8>,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct RepairSymbol {
     data: Vec<u8>,
 }

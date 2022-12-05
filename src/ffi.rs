@@ -141,6 +141,7 @@ fn new_source_symbols_buffer(data: Vec<SourceSymbol>) -> source_symbols_buffer_t
     source_symbols_buffer_t { current_index: 0, symbols: data }
 }
 
+/// returns the size of the recovered symbol if everything went well, a negative error code otherwise
 #[no_mangle]
 pub extern "C" fn source_symbols_buffer_dequeue(buffer: &mut source_symbols_buffer_t, out: *mut u8, out_len: size_t, out_metadata: &mut source_symbol_metadata_t) -> ssize_t {
     if buffer.current_index >= buffer.symbols.len() {
