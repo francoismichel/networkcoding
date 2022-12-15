@@ -1,9 +1,34 @@
 use vandermonde_lc::{decoder::Decoder as RustVLCDecoder, SymbolID};
 use vandermonde_lc::common::repair_symbol::RepairSymbol as RustVLCRepairSymbol;
 use vandermonde_lc::common::source_symbol::SourceSymbol as RustVLCSourceSymbol;
+use vandermonde_lc::common::system_wrapper::{SystemWrapperError};
+use vandermonde_lc::decoder::DecoderError as VLCDecoderError;
 use crate::{DecoderError, RepairSymbol, source_symbol_metadata_from_u64, SourceSymbol, SourceSymbolMetadata, source_symbol_metadata_to_u64};
 use byteorder::{BigEndian, ByteOrder};
-use crate::DecoderError::{BufferTooSmall, InternalError};
+use crate::DecoderError::{BufferTooSmall};
+
+
+impl From<SystemWrapperError> for DecoderError {
+    fn from(err: SystemWrapperError) -> DecoderError {
+        match err {
+            SystemWrapperError::EquationOutOfWindow | SystemWrapperError::EmptyEquation | SystemWrapperError::UnusedEquation => {
+                DecoderError::UnusedRepairSymbol
+            }
+            e => DecoderError::InternalError(format!("{:?}", e))
+        }
+    }
+}
+
+impl From<VLCDecoderError> for DecoderError {
+    fn from(err: VLCDecoderError) -> DecoderError {
+        match err {
+            VLCDecoderError::UnusedEquation => {
+                DecoderError::UnusedRepairSymbol
+            }
+            e => DecoderError::InternalError(format!("{:?}", e))
+        }
+    }
+}
 
 pub struct VLCDecoder {
     rust_vlc_decoder: RustVLCDecoder,
@@ -20,21 +45,15 @@ impl VLCDecoder {
 
     pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol) -> Result<Vec<SourceSymbol>, DecoderError> {
         let id = BigEndian::read_u64(&source_symbol.metadata[..]);
-        match self.rust_vlc_decoder.add_source_symbol(RustVLCSourceSymbol::new(id, source_symbol.data)) {
-            Err(err) => {
-                return Err(InternalError(format!("{:?}", err)));
-            }
-            Ok(recovered_ids) => {
-                let mut ret = Vec::with_capacity(recovered_ids.len());
-                for id in recovered_ids {
-                    ret.push(SourceSymbol{
-                        metadata: source_symbol_metadata_from_u64(id),
-                        data: self.rust_vlc_decoder.get_data(id).unwrap().clone(),
-                    });
-                }
-                Ok(ret)
-            }
+        let recovered_ids = self.rust_vlc_decoder.add_source_symbol(RustVLCSourceSymbol::new(id, source_symbol.data))?;
+        let mut ret = Vec::with_capacity(recovered_ids.len());
+        for id in recovered_ids {
+            ret.push(SourceSymbol{
+                metadata: source_symbol_metadata_from_u64(id),
+                data: self.rust_vlc_decoder.get_data(id).unwrap().clone(),
+            });
         }
+        Ok(ret)
     }
 
     pub fn read_repair_symbol(&self, data: &[u8]) -> Result<(usize, RepairSymbol), DecoderError> {
@@ -72,24 +91,15 @@ impl VLCDecoder {
         let mut symbol_data = vec![0; self.symbol_size];
         symbol_data.clone_from_slice(&data[consumed..consumed+self.symbol_size]);
         consumed += self.symbol_size;
-        match self.rust_vlc_decoder.add_repair_symbol(RustVLCRepairSymbol::new(first_id, sequence_number, n_protected_symbols as u64, symbol_data)) {
-            Err(err) => {
-                return match err {
-                    vandermonde_lc::decoder::DecoderError::UnusedEquation => Err(DecoderError::UnusedRepairSymbol),
-                    _ => Err(InternalError(format!("{:?}", err))),
-                }
-            }
-            Ok(recovered_ids) => {
-                let mut ret = Vec::with_capacity(recovered_ids.len());
-                for id in recovered_ids {
-                    ret.push(SourceSymbol{
-                        metadata: source_symbol_metadata_from_u64(id),
-                        data: self.rust_vlc_decoder.get_data(id).unwrap().clone(),
-                    });
-                }
-                Ok((consumed, ret))
-            }
+        let recovered_ids = self.rust_vlc_decoder.add_repair_symbol(RustVLCRepairSymbol::new(first_id, sequence_number, n_protected_symbols as u64, symbol_data))?; 
+        let mut ret = Vec::with_capacity(recovered_ids.len());
+        for id in recovered_ids {
+            ret.push(SourceSymbol{
+                metadata: source_symbol_metadata_from_u64(id),
+                data: self.rust_vlc_decoder.get_data(id).unwrap().clone(),
+            });
         }
+        Ok((consumed, ret))
     }
 
     pub fn symbol_size(&self) -> usize {
