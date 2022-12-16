@@ -13,6 +13,9 @@ impl From<VLCDecoderError> for DecoderError {
             VLCDecoderError::UnusedEquation => {
                 DecoderError::UnusedRepairSymbol
             }
+            VLCDecoderError::UnusedSourceSymbol => {
+                DecoderError::UnusedSourceSymbol
+            }
             e => DecoderError::InternalError(format!("{:?}", e))
         }
     }
