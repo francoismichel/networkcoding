@@ -11,9 +11,11 @@ use crate::DecoderError::{BufferTooSmall};
 impl From<SystemWrapperError> for DecoderError {
     fn from(err: SystemWrapperError) -> DecoderError {
         match err {
-            SystemWrapperError::EquationOutOfWindow | SystemWrapperError::EmptyEquation | SystemWrapperError::UnusedEquation => {
+            SystemWrapperError::EquationOutOfWindow | SystemWrapperError::EmptyEquation | SystemWrapperError::UnusedEquation 
+            | SystemWrapperError::EquationConcernsNoLostSymbol => {
                 DecoderError::UnusedRepairSymbol
             }
+            SystemWrapperError::SymbolAlreadyPresent | SystemWrapperError::SymbolOutOfWindow => DecoderError::UnusedSourceSymbol,
             e => DecoderError::InternalError(format!("{:?}", e))
         }
     }

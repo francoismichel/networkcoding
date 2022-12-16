@@ -65,7 +65,8 @@ impl DecoderError {
             DecoderError::BufferTooSmall => 1,
             DecoderError::BadMetadata => 2,
             DecoderError::UnImplementedDecoder => 3,
-            DecoderError::UnusedRepairSymbol => 4
+            DecoderError::UnusedRepairSymbol => 4,
+            DecoderError::UnusedSourceSymbol => 5,
         }
     }
 
@@ -76,6 +77,7 @@ impl DecoderError {
             DecoderError::BadMetadata => -3,
             DecoderError::UnImplementedDecoder => -4,
             DecoderError::UnusedRepairSymbol => -5,
+            DecoderError::UnusedSourceSymbol => -6,
         }
     }
 }
@@ -87,6 +89,7 @@ pub enum DecoderError {
     BadMetadata,
     UnImplementedDecoder,
     UnusedRepairSymbol,
+    UnusedSourceSymbol,
 }
 
 #[derive(Clone, PartialEq, Eq)]
