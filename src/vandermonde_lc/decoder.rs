@@ -1,25 +1,11 @@
 use vandermonde_lc::{decoder::Decoder as RustVLCDecoder, SymbolID};
 use vandermonde_lc::common::repair_symbol::RepairSymbol as RustVLCRepairSymbol;
 use vandermonde_lc::common::source_symbol::SourceSymbol as RustVLCSourceSymbol;
-use vandermonde_lc::common::system_wrapper::{SystemWrapperError};
 use vandermonde_lc::decoder::DecoderError as VLCDecoderError;
 use crate::{DecoderError, RepairSymbol, source_symbol_metadata_from_u64, SourceSymbol, SourceSymbolMetadata, source_symbol_metadata_to_u64};
 use byteorder::{BigEndian, ByteOrder};
 use crate::DecoderError::{BufferTooSmall};
 
-
-impl From<SystemWrapperError> for DecoderError {
-    fn from(err: SystemWrapperError) -> DecoderError {
-        match err {
-            SystemWrapperError::EquationOutOfWindow | SystemWrapperError::EmptyEquation | SystemWrapperError::UnusedEquation 
-            | SystemWrapperError::EquationConcernsNoLostSymbol => {
-                DecoderError::UnusedRepairSymbol
-            }
-            SystemWrapperError::SymbolAlreadyPresent | SystemWrapperError::SymbolOutOfWindow => DecoderError::UnusedSourceSymbol,
-            e => DecoderError::InternalError(format!("{:?}", e))
-        }
-    }
-}
 
 impl From<VLCDecoderError> for DecoderError {
     fn from(err: VLCDecoderError) -> DecoderError {
