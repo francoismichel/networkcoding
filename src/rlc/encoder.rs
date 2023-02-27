@@ -129,4 +129,8 @@ impl RLCEncoder {
     pub fn next_metadata(&mut self) -> SourceSymbolMetadata {
         source_symbol_metadata_from_u64(self.rust_rlc_encoder.next_id())
     }
+    
+    pub fn next_repair_symbol_size(&self, _up_to: SourceSymbolMetadata) -> usize {
+        return self.symbol_size + 8 + 8 + 4;
+    }
 }

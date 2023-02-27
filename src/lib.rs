@@ -289,6 +289,19 @@ impl Encoder {
             // _ => Err(EncoderError::NoNextMetadata)
         }
     }
+
+    pub fn next_repair_symbol_size(&self, up_to: SourceSymbolMetadata) -> Result<usize, EncoderError> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                Ok(enc.next_repair_symbol_size(up_to))
+            }
+            Encoder::VLC(enc) => {
+                Ok(enc.next_repair_symbol_size(up_to))
+            }
+        }
+    }
+
 }
 
 impl Decoder {
