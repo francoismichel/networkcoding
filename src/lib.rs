@@ -315,6 +315,18 @@ impl Encoder {
         }
     }
 
+    pub fn n_protected_symbols(&self) -> usize {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.current_window_size()
+            }
+            Encoder::VLC(enc) => {
+                enc.current_window_size()
+            }
+        }
+    }
+
 
 }
 

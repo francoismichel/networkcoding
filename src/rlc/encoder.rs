@@ -140,4 +140,11 @@ impl RLCEncoder {
             Some(range) => Some(source_symbol_metadata_from_u64(*range.start())),
         }
     }
+
+    pub fn current_window_size(&self) -> usize {
+        match self.rust_vlc_encoder.range() {
+            None => 0,
+            Some(range) => (range.end() + 1 - range.start()) as usize,
+        }
+    }
 }
