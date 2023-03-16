@@ -133,4 +133,11 @@ impl RLCEncoder {
     pub fn next_repair_symbol_size(&self, _up_to: SourceSymbolMetadata) -> usize {
         return self.symbol_size + 8 + 8 + 4;
     }
+
+    pub fn first_metadata(&self) -> Option<SourceSymbolMetadata> {
+        match self.rust_rlc_encoder.range() {
+            None => None,
+            Some(range) => Some(source_symbol_metadata_from_u64(*range.start())),
+        }
+    }
 }

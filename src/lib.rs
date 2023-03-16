@@ -302,6 +302,20 @@ impl Encoder {
         }
     }
 
+
+    pub fn first_metadata(&self) -> Option<SourceSymbolMetadata> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.first_metadata()
+            }
+            Encoder::VLC(enc) => {
+                enc.first_metadata()
+            }
+        }
+    }
+
+
 }
 
 impl Decoder {
