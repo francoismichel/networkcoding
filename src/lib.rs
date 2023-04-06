@@ -409,6 +409,18 @@ impl Decoder {
             }
         }
     }
+
+    pub fn bounds(&self) -> Option<(SourceSymbolMetadata, SourceSymbolMetadata)> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Decoder::RLC(dec) => {
+                dec.bounds()
+            }
+            Decoder::VLC(dec) => {
+                dec.bounds()
+            }
+        }
+    }
 }
 
 pub fn source_symbol_metadata_from_u64(n: u64) -> SourceSymbolMetadata {

@@ -100,4 +100,8 @@ impl VLCDecoder {
     pub fn remove_up_to(&mut self, md: SourceSymbolMetadata) {
         self.rust_vlc_decoder.remove_up_to(source_symbol_metadata_to_u64(md) as SymbolID);
     }
+
+    pub fn bounds(&self) -> Option<(SourceSymbolMetadata, SourceSymbolMetadata)> {
+        self.rust_vlc_decoder.bounds().map(|(start, end)| (source_symbol_metadata_from_u64(start), source_symbol_metadata_from_u64(end)))
+    }
 }
