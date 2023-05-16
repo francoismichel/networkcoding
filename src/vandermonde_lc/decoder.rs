@@ -34,9 +34,9 @@ impl VLCDecoder {
         }
     }
 
-    pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol) -> Result<Vec<SourceSymbol>, DecoderError> {
+    pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol, received_at: std::time::Instant) -> Result<Vec<SourceSymbol>, DecoderError> {
         let id = BigEndian::read_u64(&source_symbol.metadata[..]);
-        let recovered_ids = self.rust_vlc_decoder.add_source_symbol(RustVLCSourceSymbol::new(id, source_symbol.data))?;
+        let recovered_ids = self.rust_vlc_decoder.add_source_symbol(RustVLCSourceSymbol::new(id, source_symbol.data), received_at)?;
         let mut ret = Vec::with_capacity(recovered_ids.len());
         for id in recovered_ids {
             ret.push(SourceSymbol{
@@ -97,8 +97,8 @@ impl VLCDecoder {
         self.symbol_size
     }
 
-    pub fn remove_up_to(&mut self, md: SourceSymbolMetadata) {
-        self.rust_vlc_decoder.remove_up_to(source_symbol_metadata_to_u64(md) as SymbolID);
+    pub fn remove_up_to(&mut self, md: SourceSymbolMetadata, expired_at: Option<std::time::Instant>) -> SourceSymbolMetadata {
+        source_symbol_metadata_from_u64(self.rust_vlc_decoder.remove_up_to(source_symbol_metadata_to_u64(md) as SymbolID, expired_at))
     }
 
     pub fn bounds(&self) -> Option<(SourceSymbolMetadata, SourceSymbolMetadata)> {

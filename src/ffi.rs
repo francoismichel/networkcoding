@@ -1,7 +1,9 @@
 use core::slice;
 use std::mem;
+use std::ops::Add;
 use libc::size_t;
 use libc::ssize_t;
+use libc::timespec;
 
 use crate::Decoder;
 use crate::RepairSymbol;
@@ -179,16 +181,21 @@ pub extern "C" fn destroy_source_symbols_buffer(buffer: *mut source_symbols_buff
 
 
 ///
-/// the given source_sylmbol_data is copied
+/// the given source_symbol_data is copied
+
+#[cfg(not(any(target_os = "macos", target_os = "ios", target_os = "windows")))]
 #[no_mangle]
-pub extern "C" fn decoder_receive_source_symbol(decoder: &mut decoder_t, metadata: source_symbol_metadata_t, source_symbol_data: *mut u8, len: size_t) -> *mut source_symbols_buffer_t {
+pub extern "C" fn decoder_receive_source_symbol(decoder: &mut decoder_t, metadata: source_symbol_metadata_t, source_symbol_data: *mut u8, len: size_t, received_at: timespec) -> *mut source_symbols_buffer_t {
     if len != decoder.symbol_size() {
         panic!("source_symbol_data different from decoder's symbol size");
     }
     let buf = unsafe { slice::from_raw_parts_mut(source_symbol_data, len) };
     let source_symbol = SourceSymbol::new(source_symbol_metadata_from_u64(metadata), Vec::from(buf));
 
-    match decoder.receive_source_symbol(source_symbol) {
+    const INSTANT_ZERO: std::time::Instant =
+        unsafe { std::mem::transmute(std::time::UNIX_EPOCH) };
+    let received_at = INSTANT_ZERO.add(std::time::Duration::from_secs_f64(received_at.tv_nsec as f64 + (received_at.tv_nsec as f64 / 1_000_000_000.0)));
+    match decoder.receive_source_symbol(source_symbol, received_at) {
         Ok(recovered) => Box::into_raw(Box::new(new_source_symbols_buffer(recovered))),
         Err(_) => std::ptr::null_mut(),
     }
@@ -252,8 +259,11 @@ pub extern "C" fn decoder_symbol_size(decoder: &decoder_t) -> size_t {
 }
 
 #[no_mangle]
-pub extern "C" fn decoder_remove_up_to(decoder: &mut decoder_t, md: source_symbol_metadata_t) {
-    decoder.remove_up_to(source_symbol_metadata_from_u64(md))
+pub extern "C" fn decoder_remove_up_to(decoder: &mut decoder_t, md: source_symbol_metadata_t, expired_at: timespec) -> source_symbol_metadata_t {
+    const INSTANT_ZERO: std::time::Instant =
+        unsafe { std::mem::transmute(std::time::UNIX_EPOCH) };
+    let expired_at = INSTANT_ZERO.add(std::time::Duration::from_secs_f64(expired_at.tv_nsec as f64 + (expired_at.tv_nsec as f64 / 1_000_000_000.0)));
+    source_symbol_metadata_to_u64(decoder.remove_up_to(source_symbol_metadata_from_u64(md), Some(expired_at)))
 }
 
 

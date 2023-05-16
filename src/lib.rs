@@ -335,14 +335,14 @@ impl Decoder {
     ///
     /// Protects the given data and serializes its metadata into output.
     /// Returns the amount of written bytes on success
-    pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol) -> Result<Vec<SourceSymbol>, DecoderError> {
+    pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol, received_at: std::time::Instant) -> Result<Vec<SourceSymbol>, DecoderError> {
         match self {
             #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
                 dec.receive_source_symbol(source_symbol)
             }
             Decoder::VLC(dec) => {
-                dec.receive_source_symbol(source_symbol)
+                dec.receive_source_symbol(source_symbol, received_at)
             }
         }
     }
@@ -398,14 +398,14 @@ impl Decoder {
         }
     }
 
-    pub fn remove_up_to(&mut self, md: SourceSymbolMetadata) {
+    pub fn remove_up_to(&mut self, md: SourceSymbolMetadata, expired_at: Option<std::time::Instant>) -> SourceSymbolMetadata {
         match self {
             #[cfg(feature = "enable-rlc")]
             Decoder::RLC(dec) => {
-                dec.remove_up_to(md);
+                dec.remove_up_to(md, expired_at)
             }
             Decoder::VLC(dec) => {
-                dec.remove_up_to(md);
+                dec.remove_up_to(md, expired_at)
             }
         }
     }
