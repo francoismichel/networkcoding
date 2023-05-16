@@ -421,6 +421,18 @@ impl Decoder {
             }
         }
     }
+
+    pub fn largest_contiguously_received(&self) -> Option<SourceSymbolMetadata> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Decoder::RLC(dec) => {
+                dec.largest_contiguously_received()
+            }
+            Decoder::VLC(dec) => {
+                dec.largest_contiguously_received()
+            }
+        }
+    }
 }
 
 pub fn source_symbol_metadata_from_u64(n: u64) -> SourceSymbolMetadata {

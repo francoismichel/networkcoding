@@ -103,4 +103,8 @@ impl RLCDecoder {
     pub fn bounds(&self) -> Option<(SourceSymbolMetadata, SourceSymbolMetadata)> {
         self.rust_rlc_decoder.bounds().map(|(start, end)| (source_symbol_metadata_from_u64(start), source_symbol_metadata_from_u64(end)))
     }
+
+    pub fn largest_contiguously_received(&self) -> Option<SourceSymbolMetadata> {
+        self.rust_rlc_decoder.largest_contiguously_received_id().map(|md| source_symbol_metadata_from_u64(md))
+    }
 }
