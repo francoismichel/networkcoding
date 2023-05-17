@@ -1,3 +1,4 @@
+use rustgf::galois_2p8;
 use vandermonde_lc::{decoder::Decoder as RustVLCDecoder, SymbolID};
 use vandermonde_lc::common::repair_symbol::RepairSymbol as RustVLCRepairSymbol;
 use vandermonde_lc::common::source_symbol::SourceSymbol as RustVLCSourceSymbol;
@@ -29,7 +30,7 @@ pub struct VLCDecoder {
 impl VLCDecoder {
     pub fn new(symbol_size: usize, max_window_size: usize) -> VLCDecoder {
         VLCDecoder{
-            rust_vlc_decoder: RustVLCDecoder::new(symbol_size, max_window_size),
+            rust_vlc_decoder: RustVLCDecoder::new(symbol_size, max_window_size, Some(galois_2p8::PrimitivePolynomialField::new(galois_2p8::IrreducablePolynomial::Poly84320).unwrap())),
             symbol_size,
         }
     }

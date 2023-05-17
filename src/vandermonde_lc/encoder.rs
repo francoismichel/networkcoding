@@ -1,4 +1,5 @@
 use byteorder::{BigEndian, ByteOrder};
+use rustgf::galois_2p8;
 use rustgf::system::equation::EquationBounds;
 use vandermonde_lc::SymbolID;
 use vandermonde_lc::encoder::Encoder as RustVLCEncoder;
@@ -14,7 +15,7 @@ pub struct VLCEncoder {
 impl VLCEncoder {
     pub fn new(symbol_size: usize, max_window_size: usize) -> VLCEncoder {
         VLCEncoder{
-            rust_vlc_encoder: RustVLCEncoder::new(max_window_size, symbol_size),
+            rust_vlc_encoder: RustVLCEncoder::new(max_window_size, symbol_size, Some(galois_2p8::PrimitivePolynomialField::new(galois_2p8::IrreducablePolynomial::Poly84320).unwrap())),
             symbol_size,
         }
     }
