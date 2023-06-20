@@ -109,4 +109,8 @@ impl VLCDecoder {
     pub fn largest_contiguously_received(&self) -> Option<SourceSymbolMetadata> {
         self.rust_vlc_decoder.largest_contiguously_received_id().map(|md| source_symbol_metadata_from_u64(md))
     }
+
+    pub fn nb_missing_degrees(&self) -> Option<u64> {
+        self.rust_vlc_decoder.nb_missing_degrees()
+    }
 }

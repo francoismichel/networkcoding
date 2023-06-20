@@ -433,6 +433,14 @@ impl Decoder {
             }
         }
     }
+
+    pub fn nb_missing_degrees(&self) -> Option<u64> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Decoder::RLC(_) => None,
+            Decoder::VLC(dec) => dec.nb_missing_degrees(),
+        }
+    }
 }
 
 pub fn source_symbol_metadata_from_u64(n: u64) -> SourceSymbolMetadata {
