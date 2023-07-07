@@ -260,7 +260,7 @@ pub extern "C" fn decoder_symbol_size(decoder: &decoder_t) -> size_t {
 
 #[no_mangle]
 pub extern "C" fn decoder_remove_up_to(decoder: &mut decoder_t, md: source_symbol_metadata_t, expired_at: timespec) -> source_symbol_metadata_t {
-    const INSTANT_ZERO: std::time::SystemTime =
+    const INSTANT_ZERO: std::time::Instant =
         unsafe { std::mem::transmute(std::time::UNIX_EPOCH) };
     let expired_at = INSTANT_ZERO.add(std::time::Duration::from_secs_f64(expired_at.tv_nsec as f64 + (expired_at.tv_nsec as f64 / 1_000_000_000.0)));
     source_symbol_metadata_to_u64(decoder.remove_up_to(source_symbol_metadata_from_u64(md), Some(expired_at)))
