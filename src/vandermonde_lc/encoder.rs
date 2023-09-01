@@ -136,6 +136,10 @@ impl VLCEncoder {
         self.rust_vlc_encoder.range().map(|range| source_symbol_metadata_from_u64(*range.start()))
     }
     
+    pub fn last_metadata(&self) -> Option<SourceSymbolMetadata> {
+        self.rust_vlc_encoder.range().map(|range| source_symbol_metadata_from_u64(*range.end()))
+    }
+    
     pub fn current_window_size(&self) -> usize {
         match self.rust_vlc_encoder.range() {
             None => 0,

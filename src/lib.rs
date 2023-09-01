@@ -315,6 +315,18 @@ impl Encoder {
         }
     }
 
+    pub fn last_metadata(&self) -> Option<SourceSymbolMetadata> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.last_metadata()
+            }
+            Encoder::VLC(enc) => {
+                enc.last_metadata()
+            }
+        }
+    }
+
     pub fn n_protected_symbols(&self) -> usize {
         match self {
             #[cfg(feature = "enable-rlc")]
