@@ -5,6 +5,7 @@ use crate::rlc::decoder::RLCDecoder;
 #[cfg(feature = "enable-rlc")]
 use crate::rlc::encoder::RLCEncoder;
 
+use std::fmt::Debug;
 use crate::vandermonde_lc::decoder::VLCDecoder;
 use crate::vandermonde_lc::encoder::VLCEncoder;
 
@@ -148,6 +149,16 @@ pub enum Decoder {
     #[cfg(feature = "enable-rlc")]
     RLC(RLCDecoder),
     VLC(VLCDecoder),
+}
+
+impl Debug for Encoder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Self::VLC(enc) => f.write_fmt(format_args!("RLC Encoder, bounds = [{:?}, {:?}]", enc.first_metadata(), enc.last_metadata())),
+            Self::VLC(enc) => f.write_fmt(format_args!("VLC Encoder, bounds = [{:?}, {:?}]", enc.first_metadata(), enc.last_metadata())),
+        }
+    }
 }
 
 impl Encoder {
