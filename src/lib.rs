@@ -327,6 +327,17 @@ impl Encoder {
         }
     }
 
+    pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.get_sent_time(md)
+            }
+            Encoder::VLC(enc) => {
+                enc.get_sent_time(md)
+            }
+        }
+    }
 
 }
 

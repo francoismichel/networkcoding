@@ -38,7 +38,7 @@ impl VLCEncoder {
     pub fn generate_and_serialize_repair_symbol_up_to(&mut self, up_to: SourceSymbolMetadata) -> Result<Vec<u8>, EncoderError> {
         let serialized_size = self.symbol_size + 8 + 8 + 4;
         let mut out = vec![0; serialized_size];
-        let written = self.generate_and_serialize_repair_symbol_in_place_up_to(&mut out.as_mut_slice(), up_to)?;
+        let written = self.generate_and_serialize_repair_symbol_in_place_up_to(out.as_mut_slice(), up_to)?;
         if serialized_size != written {
             Err(EncoderError::InternalError("the serialized size was not equal to prediction".to_string()))
         } else {
@@ -92,7 +92,7 @@ impl VLCEncoder {
 
                         let data = eq.constant_term_data();
                         let len = self.symbol_size;
-                        (&mut output[written..written+len]).clone_from_slice(data.as_slice());
+                        output[written..written+len].clone_from_slice(data.as_slice());
                         written += len;
                         Ok(written)
                     }
@@ -129,14 +129,11 @@ impl VLCEncoder {
     }
 
     pub fn next_repair_symbol_size(&self, _up_to: SourceSymbolMetadata) -> usize {
-        return self.symbol_size + 8 + 8 + 4;
+        self.symbol_size + 8 + 8 + 4
     }   
     
     pub fn first_metadata(&self) -> Option<SourceSymbolMetadata> {
-        match self.rust_vlc_encoder.range() {
-            None => None,
-            Some(range) => Some(source_symbol_metadata_from_u64(*range.start())),
-        }
+        self.rust_vlc_encoder.range().map(|range| source_symbol_metadata_from_u64(*range.start()))
     }
     
     pub fn current_window_size(&self) -> usize {
@@ -144,5 +141,9 @@ impl VLCEncoder {
             None => 0,
             Some(range) => (range.end() + 1 - range.start()) as usize,
         }
+    }
+
+    pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
+        self.rust_vlc_encoder.get_sent_time(source_symbol_metadata_to_u64(md))
     }
 }

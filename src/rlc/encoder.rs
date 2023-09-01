@@ -147,4 +147,8 @@ impl RLCEncoder {
             Some(range) => (range.end() + 1 - range.start()) as usize,
         }
     }
+
+    pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
+        self.rust_rlc_encoder.get_sent_time(source_symbol_metadata_to_u64(md))
+    }
 }
