@@ -362,6 +362,31 @@ impl Encoder {
         }
     }
 
+    // either received or lost
+    pub fn symbol_landed(&mut self, md: SourceSymbolMetadata) {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.symbol_landed(md)
+            }
+            Encoder::VLC(enc) => {
+                enc.symbol_landed(md)
+            }
+        }
+    }
+
+    pub fn remove_landed_symbols(&mut self) {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.remove_landed_symbols()
+            }
+            Encoder::VLC(enc) => {
+                enc.remove_landed_symbols()
+            }
+        }
+    }
+
 }
 
 impl Decoder {

@@ -150,4 +150,14 @@ impl VLCEncoder {
     pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
         self.rust_vlc_encoder.get_sent_time(source_symbol_metadata_to_u64(md))
     }
+
+    
+    // either received or lost
+    pub fn symbol_landed(&mut self, md: SourceSymbolMetadata) {
+        self.rust_vlc_encoder.symbol_landed(source_symbol_metadata_to_u64(md))
+    }
+
+    pub fn remove_landed_symbols(&mut self) {
+        self.rust_vlc_encoder.remove_landed_symbols()
+    }
 }

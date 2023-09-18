@@ -158,4 +158,14 @@ impl RLCEncoder {
     pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
         self.rust_rlc_encoder.get_sent_time(source_symbol_metadata_to_u64(md))
     }
+
+
+    // either received or lost
+    pub fn symbol_landed(&mut self, md: SourceSymbolMetadata) {
+        self.rust_rlc_encoder.symbol_landed(source_symbol_metadata_to_u64(md))
+    }
+
+    pub fn remove_landed_symbols(&mut self) {
+        self.rust_rlc_encoder.remove_landed_symbols()
+    }
 }
