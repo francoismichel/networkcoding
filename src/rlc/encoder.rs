@@ -155,6 +155,13 @@ impl RLCEncoder {
         }
     }
 
+    pub fn contains_symbol(&self, md: SourceSymbolMetadata) -> bool {
+        match self.rust_vlc_encoder.range() {
+            Some(range) => range.contains(&source_symbol_metadata_to_u64(md)),
+            None => false,
+        }
+    }
+
     pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
         self.rust_rlc_encoder.get_sent_time(source_symbol_metadata_to_u64(md))
     }

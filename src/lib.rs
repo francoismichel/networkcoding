@@ -350,6 +350,18 @@ impl Encoder {
         }
     }
 
+    pub fn contains_symbol(&self, md: SourceSymbolMetadata) -> bool {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Encoder::RLC(enc) => {
+                enc.contains_symbol(md)
+            }
+            Encoder::VLC(enc) => {
+                enc.contains_symbol(md)
+            }
+        }
+    }
+
     pub fn get_sent_time(&self, md: SourceSymbolMetadata) -> Option<std::time::Instant> {
         match self {
             #[cfg(feature = "enable-rlc")]
