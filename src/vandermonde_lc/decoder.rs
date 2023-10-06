@@ -37,6 +37,12 @@ impl VLCDecoder {
 
     pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol, received_at: std::time::Instant) -> Result<Vec<SourceSymbol>, DecoderError> {
         let id = BigEndian::read_u64(&source_symbol.metadata[..]);
+        if let Some((first_id, _)) =  self.rust_vlc_decoder.bounds(){
+            if id < first_id {
+                // the source symbol has already been received and removed
+                return Err(DecoderError::UnusedSourceSymbol);
+            }
+        }
         let recovered_ids = self.rust_vlc_decoder.add_source_symbol(RustVLCSourceSymbol::new(id, source_symbol.data), received_at)?;
         let mut ret = Vec::with_capacity(recovered_ids.len());
         for id in recovered_ids {

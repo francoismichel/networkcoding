@@ -20,6 +20,12 @@ impl RLCDecoder {
 
     pub fn receive_source_symbol(&mut self, source_symbol: SourceSymbol, received_at: std::time::Instant) -> Result<Vec<SourceSymbol>, DecoderError> {
         let id = BigEndian::read_u64(&source_symbol.metadata[..]);
+        if let Some((first_id, _)) =  self.rust_rlc_decoder.bounds(){
+            if id < first_id {
+                // the source symbol has already been received and removed
+                return Err(DecoderError::UnusedSourceSymbol);
+            }
+        }
         let recovered_ids = self.rust_rlc_decoder.add_source_symbol(RustRLCSourceSymbol::new(id, source_symbol.data), received_at)?;
         match self.rust_rlc_decoder.add_source_symbol(RustRLCSourceSymbol::new(id, source_symbol.data)) {
             Err(err) => {
