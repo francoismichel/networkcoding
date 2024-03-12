@@ -39,7 +39,7 @@ pub extern "C" fn new_vlc_encoder(symbol_size: size_t, window_size: size_t) -> *
 
 #[no_mangle]
 pub extern "C" fn destroy_encoder(encoder: *mut encoder_t) {
-    unsafe { Box::from_raw(encoder) };
+    unsafe { _ = Box::from_raw(encoder) };
 }
 
 
@@ -52,7 +52,7 @@ pub extern "C" fn new_vlc_decoder(symbol_size: size_t, window_size: size_t) -> *
 
 #[no_mangle]
 pub extern "C" fn destroy_decoder(decoder: *mut decoder_t) {
-    unsafe { Box::from_raw(decoder) };
+    unsafe { _ = Box::from_raw(decoder) };
 }
 
 
