@@ -113,4 +113,8 @@ impl VLCDecoder {
     pub fn nb_missing_degrees(&self) -> Option<u64> {
         self.rust_vlc_decoder.nb_missing_degrees()
     }
+
+    pub fn set_first_symbol_id(&mut self, md: SourceSymbolMetadata) {
+        self.rust_vlc_decoder.set_first_symbol_id(source_symbol_metadata_to_u64(md));
+    }
 }

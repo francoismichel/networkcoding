@@ -441,6 +441,14 @@ impl Decoder {
             Decoder::VLC(dec) => dec.nb_missing_degrees(),
         }
     }
+
+    pub fn set_first_symbol_id(&mut self, md: SourceSymbolMetadata) {
+        match self {
+            #[cfg(feature = "enable-rlc")]
+            Decoder::RLC(dec) => (),
+            Decoder::VLC(dec) => dec.set_first_symbol_id(md),
+        }
+    }
 }
 
 pub fn source_symbol_metadata_from_u64(n: u64) -> SourceSymbolMetadata {
