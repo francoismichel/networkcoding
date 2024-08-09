@@ -8,7 +8,7 @@ edition = "2018"
 [dependencies]
 vandermonde_lc = { git = "https://github.com/francoismichel/vandermonde-linear-coding" }
 rustrlc = { git = "https://github.com/francoismichel/rustrlc", optional = true }
-rustgf = { git = "https://github.com/francoismichel/rustgfit" }
+rustgf = { git = "https://github.com/francoismichel/rustgf" }
 libc = "0.2.0"
 byteorder = "1.4.3"
 tinymt = "1.0"
