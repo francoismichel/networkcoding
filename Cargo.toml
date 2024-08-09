@@ -6,9 +6,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-vandermonde_lc = { git = "ssh://git@github.com/francoismichel/vandermonde-linear-coding.git" }
-rustrlc = { git = "ssh://git@github.com/francoismichel/rustrlc.git", optional = true }
-rustgf = { git = "ssh://git@github.com/francoismichel/rustgf.git" }
+vandermonde_lc = { git = "https://github.com/francoismichel/vandermonde-linear-coding" }
+rustrlc = { git = "https://github.com/francoismichel/rustrlc", optional = true }
+rustgf = { git = "https://github.com/francoismichel/rustgfit" }
 libc = "0.2.0"
 byteorder = "1.4.3"
 tinymt = "1.0"
